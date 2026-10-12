@@ -1,0 +1,182 @@
+<div class="container mt-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="text-primary">
+        <i class="bi bi-calendar2-check"></i>
+        Lista de Citas Médicas
+      </h2>
+      <p class="text-muted">
+        Administración y seguimiento de las citas médicas.
+      </p>
+    </div>
+
+    <button class="btn btn-primary" (click)="cargarCitas()">
+      <i class="bi bi-arrow-clockwise"></i>
+      Actualizar
+    </button>
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <div class="row align-items-end">
+
+        <div class="col-md-6">
+          <label for="prioridad" class="form-label">
+            Filtrar por prioridad
+          </label>
+
+          <select
+            id="prioridad"
+            class="form-select"
+            [(ngModel)]="prioridadSeleccionada"
+            (change)="filtrarPorPrioridad()">
+
+            <option value="">Todas las prioridades</option>
+            <option value="BAJA">Baja</option>
+            <option value="MEDIA">Media</option>
+            <option value="ALTA">Alta</option>
+            <option value="URGENTE">Urgente</option>
+
+          </select>
+        </div>
+
+        <div class="col-md-6 mt-3 mt-md-0">
+          <div class="text-md-end">
+            <span class="badge bg-primary fs-6">
+              Total de citas: {{ citas.length }}
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="citas.length === 0"
+    class="alert alert-info text-center">
+
+    <i class="bi bi-info-circle"></i>
+    No hay citas médicas registradas.
+  </div>
+
+  <div
+    class="card shadow-sm"
+    *ngIf="citas.length > 0">
+
+    <div class="card-body">
+      <div class="table-responsive">
+
+        <table class="table table-hover table-bordered align-middle">
+
+          <thead class="table-dark">
+            <tr>
+              <th>Código</th>
+              <th>Paciente</th>
+              <th>Doctor</th>
+              <th>Motivo de consulta</th>
+              <th>Prioridad</th>
+              <th>Monto</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let cita of citas">
+
+              <td>
+                <strong>{{ cita.codigocita }}</strong>
+              </td>
+
+              <td>
+                {{ cita.nombrePaciente }}
+              </td>
+
+              <td>
+                {{ cita.nombreDoctor }}
+              </td>
+
+              <td>
+                {{ cita.motivoconsulta }}
+              </td>
+
+              <td>
+                <span
+                  class="badge"
+                  [ngClass]="{
+                    'bg-success': cita.nivelprioridad?.toUpperCase() === 'BAJA',
+                    'bg-warning text-dark': cita.nivelprioridad?.toUpperCase() === 'MEDIA',
+                    'bg-danger': cita.nivelprioridad?.toUpperCase() === 'ALTA',
+                    'bg-dark': cita.nivelprioridad?.toUpperCase() === 'URGENTE'
+                  }">
+
+                  {{ cita.nivelprioridad }}
+
+                </span>
+              </td>
+
+              <td>
+                {{ cita.montoconsulta | currency:'CRC':'symbol':'1.2-2' }}
+              </td>
+
+              <td>
+                <span
+                  class="badge"
+                  [ngClass]="{
+                    'bg-success': cita.estado?.toUpperCase() === 'COMPLETADA',
+                    'bg-primary': cita.estado?.toUpperCase() === 'PENDIENTE',
+                    'bg-warning text-dark': cita.estado?.toUpperCase() === 'EN_PROCESO',
+                    'bg-danger': cita.estado?.toUpperCase() === 'CANCELADA'
+                  }">
+
+                  {{ cita.estado }}
+
+                </span>
+              </td>
+
+              <!-- Acciones -->
+              <td>
+                <div class="d-flex flex-column gap-2">
+
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-warning"
+                    *ngIf="cita.id && cita.estado?.toUpperCase() !== 'EN_PROCESO'"
+                    (click)="cambiarEstado(cita, 'EN_PROCESO')">
+
+                    En proceso
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-success"
+                    *ngIf="cita.id && cita.estado?.toUpperCase() !== 'COMPLETADA'"
+                    (click)="cambiarEstado(cita, 'COMPLETADA')">
+
+                    Completar
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-danger"
+                    *ngIf="cita.id && cita.estado?.toUpperCase() !== 'CANCELADA'"
+                    (click)="cambiarEstado(cita, 'CANCELADA')">
+
+                    Cancelar
+                  </button>
+
+                </div>
+              </td>
+
+            </tr>
+          </tbody>
+
+        </table>
+
+      </div>
+    </div>
+  </div>
+
+</div>
